@@ -1,5 +1,6 @@
 import { Toaster } from 'sonner';
 import { useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import AppRoutes from './routes/AppRoutes';
 import { Footer } from './components/layout/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -23,6 +24,7 @@ export default function App() {
           </div>
           {!hideFooter && <Footer />}
           <Toaster richColors position="top-right" />
+          <Analytics />
         </div>
       </RequireAuthProvider>
     </SocketProvider>

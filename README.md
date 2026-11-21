@@ -88,4 +88,13 @@ client/src/
 ## Docs
 
 - [Architecture](docs/ARCHITECTURE.md) · [API reference](docs/API.md) · [Deploying](docs/DEPLOY.md) · [Production readiness](docs/PRODUCTION_READINESS.md)
+
+## Original Project
+
+This project is based on Open Source Nepal.
+
+Original Repository: https://github.com/keshavroka55/OSNepal
+
+Original Website: https://osnepal.com
+
 # OSNepal

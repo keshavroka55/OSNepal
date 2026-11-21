@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: back-end } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: back-end/package-lock.json }
+      - run: npm ci
+      - run: npx prisma validate
+        env: { DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci" }
+      - run: npm test
+
+  client:
+    name: Client typecheck and build
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: client } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: client/package-lock.json }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build:check

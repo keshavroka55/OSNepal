@@ -1,0 +1,44 @@
+name: Rollback Open Source Nepal
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Git SHA to roll back to (short, e.g. a1b2c3d)'
+        required: true
+        type: string
+
+jobs:
+  rollback:
+    name: Rollback to previous version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Rollback on Production Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            APP_DIR="/opt/os-nepal/app"
+            cd "$APP_DIR"
+
+            TARGET_SHA="${{ github.event.inputs.sha }}"
+            echo "⏮️  Rolling back to: $TARGET_SHA"
+
+            # Check the image exists locally
+            if ! docker image inspect os-nepal-api:$TARGET_SHA > /dev/null 2>&1; then
+              echo "❌ Image os-nepal-api:$TARGET_SHA not found locally!"
+              echo "Available images:"
+              docker images os-nepal-api
+              exit 1
+            fi
+
+            export IMAGE_TAG="$TARGET_SHA"
+            docker compose -f docker-compose.prod.yml up -d --no-deps api
+
+            echo "✅ Rolled back to $TARGET_SHA"
+            docker compose -f docker-compose.prod.yml ps

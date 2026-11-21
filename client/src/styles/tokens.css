@@ -1,0 +1,171 @@
+/*
+ * The single source of truth for colour, type, radius and elevation.
+ * Components use the semantic names (bg-surface, text-text-muted, ...) and
+ * never a raw hex, so both themes stay consistent and a rebrand is one edit.
+ *
+ * Contrast (checked): body text >= 14:1, muted text >= 5.9:1, primary and the
+ * status colours >= 5.8:1 on their surfaces, in both themes (WCAG AA = 4.5:1).
+ */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f6f7f9;
+  --surface: #ffffff;
+  --surface-raised: #eef0f4;
+  --border: #d9dce3;
+  --text: #14161b;
+  --text-muted: #555b69;
+
+  /* One brand blue. Dark mode uses a lighter tint of the same hue so it
+     keeps contrast on dark surfaces. */
+  --primary: #2250e0;
+  --primary-hover: #1b43c0;
+  --primary-active: #16389f;
+  --primary-foreground: #ffffff;
+
+  --success: #16743f;
+  --warning: #8f5400;
+  --danger: #bf2a2a;
+  --ring: #2250e0;
+
+  /* Light mode may use a soft shadow; dark mode relies on borders instead. */
+  --elevation-sm: 0 1px 2px 0 rgb(20 22 27 / 0.06);
+  --elevation-md: 0 2px 8px -2px rgb(20 22 27 / 0.10);
+  --elevation-lg: 0 8px 24px -8px rgb(20 22 27 / 0.16);
+}
+
+.dark {
+  --background: #0e1014;
+  --surface: #15181e;
+  --surface-raised: #1d212a;
+  --border: #2b303b;
+  --text: #e9ebf0;
+  --text-muted: #9ba2b1;
+
+  --primary: #7b9cff;
+  --primary-hover: #9ab4ff;
+  --primary-active: #b6c9ff;
+  --primary-foreground: #0a1128;
+
+  --success: #4fc48b;
+  --warning: #e7ae45;
+  --danger: #f27a78;
+  --ring: #7b9cff;
+
+  --elevation-sm: 0 0 #0000;
+  --elevation-md: 0 0 #0000;
+  --elevation-lg: 0 0 #0000;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-ring: var(--ring);
+
+  /* Aliases so the existing shadcn-style components keep working.
+     They point at the tokens above and add no colours of their own. */
+  --color-foreground: var(--text);
+  --color-muted-foreground: var(--text-muted);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text);
+  --color-secondary: var(--surface-raised);
+  --color-secondary-foreground: var(--text);
+  --color-muted: var(--surface-raised);
+  --color-accent: var(--surface-raised);
+  --color-accent-foreground: var(--text);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--primary-foreground);
+  --color-input: var(--border);
+  --color-input-background: var(--surface);
+
+  /* Fonts are self-hosted through @fontsource, with system fallbacks. */
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Radius scale: 6 / 8 / 12 only. Larger legacy sizes collapse to 12. */
+  --radius-xs: 6px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px;
+  --radius-3xl: 12px;
+
+  --shadow-xs: var(--elevation-sm);
+  --shadow-sm: var(--elevation-sm);
+  --shadow-md: var(--elevation-md);
+  --shadow-lg: var(--elevation-lg);
+  --shadow-xl: var(--elevation-lg);
+  --shadow-2xl: var(--elevation-lg);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  /* One visible focus style for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+}
+
+@layer utilities {
+  /* Votes, ranks and counts use mono digits that don't jitter when they change. */
+  .tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Motion only communicates state (vote, tab, dialog), and users who ask for
+   less motion get none. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

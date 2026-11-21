@@ -1,0 +1,114 @@
+name: Deploy Open Source Nepal to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Deploy only runs when the same checks as CI pass.
+  test:
+    name: Test before deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: cd back-end && npm ci && npm test
+      - run: cd client && npm ci && npm run typecheck && npm run build:check
+
+  deploy:
+    name: Deploy to DigitalOcean
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            # ─── Config ────────────────────────────────────────────────
+            APP_DIR="/opt/os-nepal/app"
+            COMPOSE_FILE="docker-compose.prod.yml"
+            MAX_IMAGES=5
+
+            # ─── Capture previous SHA before pull (for rollback) ───────
+            cd "$APP_DIR"
+            PREV_SHA=$(git rev-parse --short HEAD)
+            echo "📌 Previous version: $PREV_SHA"
+
+            # ─── Pull latest code ──────────────────────────────────────
+            echo "📥 Pulling latest code from main..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            NEW_SHA=$(git rev-parse --short HEAD)
+            export IMAGE_TAG="$NEW_SHA"
+            export PREV_TAG="$PREV_SHA"
+            echo "🆕 New version: $IMAGE_TAG"
+
+            # ─── Build frontend ────────────────────────────────────────
+            echo "🎨 Building frontend..."
+            cd "$APP_DIR/client"
+            npm install --prefer-offline
+            npm run build
+            cd "$APP_DIR"
+
+            # ─── Build only API image (no nginx container) ─────────────
+            echo "🐳 Building API image with tag: $IMAGE_TAG"
+            docker compose -f "$COMPOSE_FILE" build api
+
+            # ─── Tag image for rollback reference ──────────────────────
+            docker tag os-nepal-api:$IMAGE_TAG os-nepal-api:latest
+
+            # ─── Deploy only API (db stays up, no nginx container) ─────
+            echo "🔄 Restarting API container..."
+            docker compose -f "$COMPOSE_FILE" up -d --no-deps api
+
+            # Fix upload directory permissions after every deploy
+            mkdir -p /opt/os-nepal/uploads
+            chmod -R 755 /opt/os-nepal/uploads
+
+            # ─── Run DB migrations ─────────────────────────────────────
+            echo "🗄️  Running database migrations..."
+            docker compose -f "$COMPOSE_FILE" exec -T api npx prisma migrate deploy
+
+            # ─── Reload host nginx to serve new frontend build ─────────
+            echo "🔁 Reloading host nginx..."
+            systemctl reload nginx
+
+            # ─── Health check ──────────────────────────────────────────
+            echo "⏳ Waiting for health check..."
+            sleep 15
+
+            API_STATUS=$(docker inspect --format='{{.State.Health.Status}}' os-nepal-api 2>/dev/null || echo "unknown")
+            echo "API health: $API_STATUS"
+
+            if [ "$API_STATUS" != "healthy" ]; then
+              echo "❌ Health check FAILED — rolling back to $PREV_TAG..."
+              export IMAGE_TAG="$PREV_TAG"
+              docker compose -f "$COMPOSE_FILE" up -d --no-deps api
+              echo "⚠️  Rolled back to $PREV_TAG. Check your logs!"
+              docker compose -f "$COMPOSE_FILE" logs --tail=50 api
+              exit 1
+            fi
+
+            # ─── Cleanup old images ────────────────────────────────────
+            echo "🧹 Pruning old images (keeping last $MAX_IMAGES)..."
+            docker images os-nepal-api --format "{{.Tag}} {{.ID}}" \
+              | grep -v latest \
+              | sort -r \
+              | tail -n +$((MAX_IMAGES + 1)) \
+              | awk '{print $2}' \
+              | xargs -r docker rmi -f || true
+
+            # ─── Done ─────────────────────────────────────────────────
+            echo "✅ Deployment complete!"
+            docker compose -f "$COMPOSE_FILE" ps
+            echo "🎉 Open Source Nepal deployed successfully! Version: $IMAGE_TAG"

@@ -1,0 +1,13 @@
+# Recipe Nest - https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /profile/edit
+Disallow: /add-recipe
+Disallow: /admin/
+
+# Crawl delay to prevent server overload
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://recipenest.keshavdev.me/sitemap.xml

@@ -1,0 +1,47 @@
+# Open Source Nepal - robots.txt
+# This file tells search engines which pages to crawl and index
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /profile/edit
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /*.json
+Disallow: /*.xml
+Disallow: /api
+Disallow: /node_modules
+Disallow: /build
+Disallow: /dist
+
+# Sitemap location
+Sitemap: https://opensourcenepal.org/sitemap.xml
+
+# Crawler delays (optional but helpful)
+Crawl-delay: 1
+Request-rate: 30/1m
+
+# Specific rules for Google Bot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Specific rules for Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /

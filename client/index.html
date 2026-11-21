@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Primary Meta Tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open Source Nepal - Where Nepal's builders turn ideas into meaningful projects</title>
+
+  <meta name="title" content="Open Source Nepal - Where Nepal's builders turn ideas into meaningful projects">
+  <meta name="description"
+    content="Open Source Nepal is a community where developers, students, designers and investors in Nepal share ideas, get feedback, find teammates and build open source projects and startups together.">
+  <meta name="keywords"
+    content="startup launch, indie hackers, product hunt, startup community, angel investors, tech founders, product discovery, build in public, SaaS launch, startup mentorship">
+  <meta name="author" content="Open Source Nepal Team">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="theme-color" content="#f6f7f9" />
+  
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://opensourcenepal.org/">
+
+  <!-- Manifest & PWA -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://opensourcenepal.org/">
+  <meta property="og:title" content="Open Source Nepal - Where Nepal's builders turn ideas into meaningful projects">
+  <meta property="og:description"
+    content="Launch your startup, climb the leaderboards, and connect with mentors and investors at Open Source Nepal.">
+  <meta property="og:image" content="https://opensourcenepal.org/og-image.jpg">
+  <meta property="og:site_name" content="Open Source Nepal">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://opensourcenepal.org/">
+  <meta name="twitter:title" content="Open Source Nepal - Where Nepal's builders turn ideas into meaningful projects">
+  <meta name="twitter:description"
+    content="The modern ecosystem for builders. Launch products, gain exposure, and find your next investor on Open Source Nepal.">
+  <meta name="twitter:image" content="https://opensourcenepal.org/twitter-image.jpg">
+
+  <!-- Runs before first paint so the page never flashes the wrong theme.
+       Keep the storage key in sync with ThemeContext.tsx. -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('msa-theme');
+        var choice = stored === 'light' || stored === 'dark' ? stored : 'system';
+        var dark = choice === 'dark' ||
+          (choice === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var root = document.documentElement;
+        if (dark) root.classList.add('dark');
+        root.style.colorScheme = dark ? 'dark' : 'light';
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#0e1014' : '#f6f7f9');
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

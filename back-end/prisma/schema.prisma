@@ -1,0 +1,713 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                     String         @id @default(uuid())
+  name                   String
+  username               String?        @unique
+  email                  String         @unique
+  password               String?
+  bio                    String?
+  avatar                 String?
+  website                String?
+  location               String?
+  role                   Role           @default(user)
+  googleId               String?        @unique @map("google_id")
+  emailVerified          Boolean        @default(false) @map("email_verified")
+  emailVerificationToken String?        @map("email_verification_token")
+  passwordResetToken     String?        @map("password_reset_token")
+  passwordResetExpiry    DateTime?      @map("password_reset_expiry")
+  headline               String?
+  twitterUrl             String?
+  linkedinUrl            String?
+  githubUrl              String?
+  verified               Boolean        @default(false)
+  reputationPoints       Int            @default(0)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  messagePolicy          MessagePolicy  @default(ANYONE)
+  skills                 String[]       @default([])
+  interests              String[]       @default([])
+  firm                   String?
+  focusAreas             String[]       @default([])
+  ticketSize             String?
+  profileCompleted       Boolean        @default(false)
+  joinRequestsSent       JoinRequest[]  @relation("JoinRequester")
+  memberships            ProjectMember[]
+  contributions          Contribution[]
+  badges                 UserBadge[]
+  investorInterests      InvestorInterest[] @relation("InvestorUser")
+  investorReviews        InvestorInterest[] @relation("InvestorReviewer")
+  startupsMarked         Startup[]      @relation("StartupMarkedBy")
+  receivedConnections    Connection[]   @relation("Receiver")
+  sentConnections        Connection[]   @relation("Requester")
+  conversationsA         Conversation[] @relation("UserA")
+  conversationsB         Conversation[] @relation("UserB")
+  receivedMessages       Message[]      @relation("Receiver")
+  sentMessages           Message[]      @relation("Sender")
+  bookmarks              Bookmark[]
+  collections            Collection[]
+  comments               Comment[]
+  follows                Follow[]       @relation("Follower")
+  followers              Follow[]       @relation("Following")
+  actedNotifications     Notification[] @relation("ActorNotifications")
+  notifications          Notification[] @relation("UserNotifications")
+  startups               Startup[]
+  votes                  Vote[]
+  mentionedInComments    Comment[]      @relation("CommentMentions")
+  spacesCreated          Space[]
+  spaceMemberships       SpaceMember[]
+  posts                  Post[]
+  postVotes              PostVote[]
+  postSaves              PostSave[]
+  postComments           PostComment[]
+  commentVotes           CommentVote[]
+  reportsFiled           Report[]       @relation("ReportReporter")
+  reportsResolved        Report[]       @relation("ReportResolver")
+
+  @@map("users")
+}
+
+model Startup {
+  id              String           @id @default(uuid())
+  name            String
+  slug            String           @unique
+  tagline         String
+  description     String
+  logo            String?
+  banner          String?
+  websiteUrl      String?          @map("website_url")
+  githubUrl       String?          @map("github_url")
+  twitterUrl      String?          @map("twitter_url")
+  discordUrl      String?          @map("discord_url")
+  linkedinUrl     String?          @map("linkedin_url")
+  status          StartupStatus    @default(pending)
+  featured        Boolean          @default(false)
+  launchDate      DateTime?        @map("launch_date")
+  totalVotes      Int              @default(0)
+  totalComments   Int              @default(0)
+  totalViews      Int              @default(0)
+  dailyRank       Int?
+  weeklyRank      Int?
+  monthlyRank     Int?
+  founderId       String
+  categoryId      String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  teamMembers     Json?
+  type            ProjectType      @default(STARTUP)
+  stage           ProjectStage     @default(IDEA)
+  problem         String?
+  solution        String?
+  targetUsers     String?          @map("target_users")
+  features        String[]         @default([])
+  lookingFor      String[]         @default([])
+  roadmap         Json?
+  openToFeedback  Boolean          @default(true) @map("open_to_feedback")
+  investorBacked  Boolean          @default(false) @map("investor_backed")
+  investorMarkedAt DateTime?       @map("investor_marked_at")
+  investorMarkedById String?       @map("investor_marked_by_id")
+  investorMarkedBy User?           @relation("StartupMarkedBy", fields: [investorMarkedById], references: [id], onDelete: SetNull)
+  joinRequests    JoinRequest[]
+  members         ProjectMember[]
+  projectContributions Contribution[]
+  investorInterests InvestorInterest[]
+  bookmarks       Bookmark[]
+  collectionItems CollectionItem[]
+  comments        Comment[]
+  leaderboards    Leaderboard[]
+  notifications   Notification[]
+  screenshots     Screenshot[]
+  startupTags     StartupTag[]
+  category        Category         @relation(fields: [categoryId], references: [id])
+  founder         User             @relation(fields: [founderId], references: [id], onDelete: Cascade)
+  votes           Vote[]
+  posts           Post[]
+
+  @@index([founderId])
+  @@index([categoryId])
+  @@index([type, status])
+  @@index([investorBacked])
+  @@index([launchDate])
+  @@index([dailyRank])
+  @@index([weeklyRank])
+  @@index([monthlyRank])
+  @@map("startups")
+}
+
+model Screenshot {
+  id        String   @id @default(uuid())
+  imageUrl  String   @map("image_url")
+  position  Int      @default(0)
+  startupId String
+  createdAt DateTime @default(now())
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  @@map("screenshots")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  startups    Startup[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id       String       @id @default(uuid())
+  name     String       @unique
+  slug     String       @unique
+  startups StartupTag[]
+  posts    PostTag[]
+
+  @@map("tags")
+}
+
+model StartupTag {
+  id        String  @id @default(uuid())
+  startupId String
+  tagId     String
+  startup   Startup @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([startupId, tagId])
+  @@map("startup_tags")
+}
+
+model Vote {
+  id        String   @id @default(uuid())
+  userId    String
+  startupId String
+  createdAt DateTime @default(now())
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, startupId])
+  @@index([startupId])
+  @@index([userId])
+  @@map("votes")
+}
+
+model Comment {
+  id             String         @id @default(uuid())
+  content        String
+  userId         String
+  startupId      String
+  parentId       String?
+  upvotes        Int            @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  parent         Comment?       @relation("CommentReplies", fields: [parentId], references: [id])
+  replies        Comment[]      @relation("CommentReplies")
+  startup        Startup        @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications  Notification[]
+  mentionedUsers User[]         @relation("CommentMentions")
+
+  @@index([startupId])
+  @@index([userId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  startupId String
+  createdAt DateTime @default(now())
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, startupId])
+  @@map("bookmarks")
+}
+
+model Collection {
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  userId          String
+  createdAt       DateTime         @default(now())
+  collectionItems CollectionItem[]
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("collections")
+}
+
+model CollectionItem {
+  id           String     @id @default(uuid())
+  collectionId String
+  startupId    String
+  createdAt    DateTime   @default(now())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  startup      Startup    @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, startupId])
+  @@map("collection_items")
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  actorId   String?
+  startupId String?
+  commentId String?
+  type      NotificationType
+  message   String?
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  actor     User?            @relation("ActorNotifications", fields: [actorId], references: [id])
+  comment   Comment?         @relation(fields: [commentId], references: [id])
+  startup   Startup?         @relation(fields: [startupId], references: [id])
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model Leaderboard {
+  id           String          @id @default(uuid())
+  startupId    String
+  type         LeaderboardType
+  rank         Int
+  score        Int
+  calculatedAt DateTime        @default(now())
+  startup      Startup         @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  @@unique([startupId, type])
+  @@index([type, rank])
+  @@map("leaderboards")
+}
+
+model Connection {
+  id          String           @id @default(uuid())
+  requesterId String
+  receiverId  String
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  receiver    User             @relation("Receiver", fields: [receiverId], references: [id])
+  requester   User             @relation("Requester", fields: [requesterId], references: [id])
+
+  @@unique([requesterId, receiverId])
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime  @default(now())
+  userA     User      @relation("UserA", fields: [userAId], references: [id])
+  userB     User      @relation("UserB", fields: [userBId], references: [id])
+  messages  Message[]
+
+  @@unique([userAId, userBId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  text           String
+  seenAt         DateTime?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  receiver       User         @relation("Receiver", fields: [receiverId], references: [id])
+  sender         User         @relation("Sender", fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt])
+}
+
+enum Role {
+  user
+  admin
+  developer
+  investor
+}
+
+enum ProjectType {
+  STARTUP
+  OPEN_SOURCE
+  LEARNING
+  IDEA
+  HARDWARE
+}
+
+enum ProjectStage {
+  IDEA
+  BUILDING
+  BETA
+  LAUNCHED
+}
+
+enum JoinRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum InvestorInterestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum StartupStatus {
+  draft
+  pending
+  published
+  rejected
+  archived
+}
+
+enum NotificationType {
+  UPVOTE
+  COMMENT
+  REPLY
+  FOLLOW
+  FEATURED
+  LAUNCHED
+  JOIN_REQUEST
+  JOIN_ACCEPTED
+  JOIN_REJECTED
+  INVESTOR_INTEREST
+  INVESTOR_MARK
+  BADGE
+  CONNECTION
+}
+
+enum LeaderboardType {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum MessagePolicy {
+  ANYONE
+  CONNECTIONS_ONLY
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ───────────────────────── Ecosystem ─────────────────────────
+
+enum SpaceRole {
+  MEMBER
+  MODERATOR
+  OWNER
+}
+
+enum PostType {
+  IDEA
+  FEEDBACK
+  DISCUSSION
+  QUESTION
+  SHOWCASE
+  LINK
+}
+
+enum PostStatus {
+  PUBLISHED
+  REMOVED
+  LOCKED
+}
+
+enum ReportTargetType {
+  POST
+  COMMENT
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model Space {
+  id          String        @id @default(uuid())
+  slug        String        @unique
+  name        String
+  description String
+  icon        String?
+  rules       String?
+  createdById String
+  isPrivate   Boolean       @default(false)
+  memberCount Int           @default(0)
+  createdAt   DateTime      @default(now())
+  createdBy   User          @relation(fields: [createdById], references: [id])
+  members     SpaceMember[]
+  posts       Post[]
+
+  @@map("spaces")
+}
+
+model SpaceMember {
+  id       String    @id @default(uuid())
+  userId   String
+  spaceId  String
+  role     SpaceRole @default(MEMBER)
+  joinedAt DateTime  @default(now())
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  space    Space     @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, spaceId])
+  @@index([spaceId])
+  @@map("space_members")
+}
+
+model Post {
+  id           String        @id @default(uuid())
+  spaceId      String
+  authorId     String
+  type         PostType      @default(DISCUSSION)
+  title        String
+  body         String        @default("")
+  linkUrl      String?
+  startupId    String?
+  // Denormalised counters, changed only inside transactions.
+  score        Int           @default(0)
+  commentCount Int           @default(0)
+  hotScore     Float         @default(0)
+  status       PostStatus    @default(PUBLISHED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  space        Space         @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  startup      Startup?      @relation(fields: [startupId], references: [id], onDelete: SetNull)
+  votes        PostVote[]
+  saves        PostSave[]
+  comments     PostComment[]
+  tags         PostTag[]
+
+  @@index([spaceId, createdAt])
+  @@index([spaceId, hotScore])
+  @@index([hotScore])
+  @@index([score])
+  @@index([authorId])
+  @@index([startupId])
+  @@map("posts")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+model PostVote {
+  id        String   @id @default(uuid())
+  userId    String
+  postId    String
+  value     Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("post_votes")
+}
+
+model PostSave {
+  id        String   @id @default(uuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId, createdAt])
+  @@map("post_saves")
+}
+
+model PostComment {
+  id         String        @id @default(uuid())
+  postId     String
+  authorId   String
+  parentId   String?
+  depth      Int           @default(0)
+  body       String
+  score      Int           @default(0)
+  replyCount Int           @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  // Soft delete keeps the thread shape intact when a parent is removed.
+  deletedAt  DateTime?
+  post       Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent     PostComment?  @relation("PostCommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    PostComment[] @relation("PostCommentReplies")
+  votes      CommentVote[]
+
+  @@index([postId, parentId, createdAt])
+  @@index([parentId])
+  @@index([authorId])
+  @@map("post_comments")
+}
+
+model CommentVote {
+  id        String      @id @default(uuid())
+  userId    String
+  commentId String
+  value     Int
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+  @@index([commentId])
+  @@map("comment_votes")
+}
+
+model Report {
+  id           String           @id @default(uuid())
+  reporterId   String
+  targetType   ReportTargetType
+  targetId     String
+  reason       String
+  status       ReportStatus     @default(OPEN)
+  resolvedById String?
+  resolvedAt   DateTime?
+  createdAt    DateTime         @default(now())
+  reporter     User             @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolvedBy   User?            @relation("ReportResolver", fields: [resolvedById], references: [id])
+
+  // One report per user per target, so a single person cannot flood the queue.
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("reports")
+}
+
+
+// ───────────────────────── Open Source Nepal ─────────────────────────
+
+model JoinRequest {
+  id          String            @id @default(uuid())
+  startupId   String
+  userId      String
+  roleWanted  String
+  message     String
+  status      JoinRequestStatus @default(PENDING)
+  respondedAt DateTime?
+  createdAt   DateTime          @default(now())
+  startup     Startup           @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  user        User              @relation("JoinRequester", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([startupId, userId])
+  @@index([userId, status])
+  @@index([startupId, status])
+  @@map("join_requests")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  startupId String
+  userId    String
+  role      String   @default("Contributor")
+  joinedAt  DateTime @default(now())
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([startupId, userId])
+  @@index([userId])
+  @@map("project_members")
+}
+
+// A contribution a member lists on their profile ("I built X on this project").
+// The project owner can verify it, which is what makes it usable in interviews.
+model Contribution {
+  id          String   @id @default(uuid())
+  userId      String
+  startupId   String
+  title       String
+  description String?
+  url         String?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startup     Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([startupId])
+  @@map("contributions")
+}
+
+model Badge {
+  id          String      @id @default(uuid())
+  key         String      @unique
+  name        String
+  description String
+  icon        String
+  tier        String      @default("bronze")
+  users       UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  badgeId   String
+  awardedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@map("user_badges")
+}
+
+// An investor asks for the "Investor Interested" mark on a project.
+// Only an admin approving it sets Startup.investorBacked.
+model InvestorInterest {
+  id           String                 @id @default(uuid())
+  investorId   String
+  startupId    String
+  note         String?
+  status       InvestorInterestStatus @default(PENDING)
+  reviewedById String?
+  reviewedAt   DateTime?
+  createdAt    DateTime               @default(now())
+  investor     User                   @relation("InvestorUser", fields: [investorId], references: [id], onDelete: Cascade)
+  reviewedBy   User?                  @relation("InvestorReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  startup      Startup                @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  @@unique([investorId, startupId])
+  @@index([status, createdAt])
+  @@map("investor_interests")
+}

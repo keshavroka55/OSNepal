@@ -1,0 +1,88 @@
+import { Link } from 'react-router-dom';
+import Logo from '../../components/Logo';
+
+type FooterLink = {
+  label: string;
+  path: string;
+  external?: boolean;
+};
+
+const footerLinks: Record<string, FooterLink[]> = {
+  Explore: [
+    { label: 'Discover projects', path: '/discover' },
+    { label: 'Open source', path: '/open-source' },
+    { label: 'Ideas & feedback', path: '/ideas' },
+    { label: 'Leaderboard', path: '/leaderboard' },
+  ],
+  Community: [
+    { label: 'People', path: '/people' },
+    { label: 'Discussions', path: '/ecosystem' },
+    { label: 'Share a project', path: '/create' },
+    { label: 'For investors', path: '/register' },
+  ],
+  Legal: [
+    { label: 'Privacy Policy', path: '/privacy' },
+    { label: 'Terms of Service', path: '/terms' },
+    { label: 'Cookie Policy', path: '/cookies' },
+  ],
+};
+
+export function Footer() {
+  return (
+    <footer className="border-t border-border bg-background">
+      <div className="mx-auto w-full max-w-[1240px] px-4 pt-14 pb-8 sm:px-6 sm:pt-16 lg:px-8">
+        {/* Link columns */}
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 md:gap-x-12">
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {category}
+              </h3>
+              <ul className="space-y-2.5">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    {link.external ? (
+                      <a
+                        href={link.path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-[13px] text-foreground/80 transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        className="inline-block text-[13px] text-foreground/80 transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-14 flex flex-col gap-6 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+          {/* Brand */}
+          <div className="flex items-center gap-2">
+            <Logo size="sm" />
+            <span className="text-[13px] font-semibold text-foreground">
+              Open Source Nepal
+            </span>
+          </div>
+
+          <p className="text-[12px] text-muted-foreground">Made in Nepal 🇳🇵 for builders everywhere.</p>
+
+          {/* Copyright */}
+          <p className="text-[12px] text-muted-foreground sm:text-right">
+            &copy; {new Date().getFullYear()} Open Source Nepal. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}

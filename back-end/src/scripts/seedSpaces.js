@@ -3,12 +3,12 @@
 import prisma from "../prisma.js";
 
 const SPACES = [
-  { slug: "ideas", name: "Ideas", icon: "💡", description: "Share a raw idea and let the community sharpen it before you build.", rules: "Describe the problem first, then your idea. Say who feels the pain." },
-  { slug: "feedback", name: "Feedback", icon: "🔍", description: "Get honest critique on your product, prototype or pitch from people outside your team.", rules: "Give feedback before you ask for it. Critique the work, not the person." },
-  { slug: "cofounder-hub", name: "Co-founder Hub", icon: "🤝", description: "Technical founder looking for a business partner, or the other way round.", rules: "Be clear about commitment, equity expectations and what you bring." },
-  { slug: "build-in-public", name: "Build in Public", icon: "🛠️", description: "Share progress, numbers and lessons while you build.", rules: "Be specific. No pure self-promotion." },
-  { slug: "learn-and-contribute", name: "Learn & Contribute", icon: "🎓", description: "Students and beginners: find a good first project and ask for mentorship.", rules: "No question is too basic. Say what you already tried." },
-  { slug: "hardware-lab", name: "Hardware Lab", icon: "🔌", description: "IoT, embedded and robotics builders in Nepal.", rules: "Share parts lists, schematics and where you are stuck." },
+  { slug: "ideas", name: "Ideas", icon: "lightbulb", description: "Share a raw idea and let the community sharpen it before you build.", rules: "Describe the problem first, then your idea. Say who feels the pain." },
+  { slug: "feedback", name: "Feedback", icon: "message-square-text", description: "Get honest critique on your product, prototype or pitch from people outside your team.", rules: "Give feedback before you ask for it. Critique the work, not the person." },
+  { slug: "cofounder-hub", name: "Co-founder Hub", icon: "handshake", description: "Technical founder looking for a business partner, or the other way round.", rules: "Be clear about commitment, equity expectations and what you bring." },
+  { slug: "build-in-public", name: "Build in Public", icon: "hammer", description: "Share progress, numbers and lessons while you build.", rules: "Be specific. No pure self-promotion." },
+  { slug: "learn-and-contribute", name: "Learn & Contribute", icon: "graduation-cap", description: "Students and beginners: find a good first project and ask for mentorship.", rules: "No question is too basic. Say what you already tried." },
+  { slug: "hardware-lab", name: "Hardware Lab", icon: "cpu", description: "IoT, embedded and robotics builders in Nepal.", rules: "Share parts lists, schematics and where you are stuck." },
 ];
 
 async function seed() {
@@ -17,7 +17,13 @@ async function seed() {
 
   for (const space of SPACES) {
     const exists = await prisma.space.findUnique({ where: { slug: space.slug } });
-    if (exists) continue;
+
+    if (exists) {
+      await prisma.space.update({ where: { slug: space.slug }, data: { icon: space.icon } });
+      console.info(`Updated icon: ${space.name}`);
+      continue;
+    }
+    
     await prisma.space.create({
       data: { ...space, createdById: admin.id, memberCount: 1, members: { create: { userId: admin.id, role: "OWNER" } } },
     });

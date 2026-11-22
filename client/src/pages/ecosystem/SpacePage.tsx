@@ -8,6 +8,7 @@ import { SpaceSidebar } from '../../features/ecosystem/components/SpaceSidebar';
 import { usePostFeed } from '../../features/ecosystem/hooks/usePostFeed';
 import type { SortKey, Space } from '../../features/ecosystem/types';
 import NotFoundPage from '../NotFoundPage';
+import { getSpaceIcon } from '../../features/ecosystem/spaceIcons';
 
 export default function SpacePage() {
   const { slug = '' } = useParams();
@@ -16,6 +17,8 @@ export default function SpacePage() {
   const [space, setSpace] = useState<Space | null>(null);
   const [missing, setMissing] = useState(false);
   const feed = usePostFeed({ sort, space: slug });
+  const SpaceIcon = getSpaceIcon(space?.icon);
+
 
   useEffect(() => {
     setSpace(null);
@@ -31,7 +34,16 @@ export default function SpacePage() {
       <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 pb-6 pt-0 lg:grid-cols-[minmax(0,1fr)_280px]">
         <main>
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h1 className="text-xl font-semibold">{space ? `${space.icon ?? ''} ${space.name}` : 'Loading...'}</h1>
+            <h1 className="inline-flex items-center gap-2 text-xl font-semibold">
+              {space ? (
+                <>
+                  <SpaceIcon className="h-5 w-5 text-text-muted" aria-hidden />
+                  {space.name}
+                </>
+              ) : (
+                'Loading...'
+              )}
+            </h1>
             <SortTabs
               value={sort}
               onChange={(s) => setParams({ sort: s })}

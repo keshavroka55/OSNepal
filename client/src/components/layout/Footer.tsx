@@ -1,11 +1,17 @@
 import { Link } from 'react-router-dom';
 import Logo from '../../components/Logo';
+import { NepalFlag } from '../NepalFlag';
+import { ExternalLink } from 'lucide-react';
+
+
+
 
 type FooterLink = {
   label: string;
   path: string;
   external?: boolean;
 };
+const REPO = 'https://github.com/keshavroka55/OSNepal';
 
 const footerLinks: Record<string, FooterLink[]> = {
   Explore: [
@@ -25,6 +31,13 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: 'Terms of Service', path: '/terms' },
     { label: 'Cookie Policy', path: '/cookies' },
   ],
+
+  Project: [
+    { label: 'GitHub', path: REPO, external: true },
+    { label: 'Contribute', path: `${REPO}/blob/main/CONTRIBUTING.md`, external: true },
+    { label: 'Report an issue', path: `${REPO}/issues`, external: true },
+    { label: 'Contributors', path: `${REPO}/graphs/contributors`, external: true },
+  ],
 };
 
 export function Footer() {
@@ -32,7 +45,7 @@ export function Footer() {
     <footer className="border-t border-border bg-background">
       <div className="mx-auto w-full max-w-[1240px] px-4 pt-14 pb-8 sm:px-6 sm:pt-16 lg:px-8">
         {/* Link columns */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 md:gap-x-12">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4 md:gap-x-12">
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -46,9 +59,9 @@ export function Footer() {
                         href={link.path}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block text-[13px] text-foreground/80 transition-colors hover:text-foreground"
-                      >
+                        className="inline-flex items-center gap-1 text-[13px] text-foreground/80 transition-colors hover:text-foreground">
                         {link.label}
+                        <ExternalLink className="h-3 w-3 opacity-60" aria-hidden />
                       </a>
                     ) : (
                       <Link
@@ -75,8 +88,10 @@ export function Footer() {
             </span>
           </div>
 
-          <p className="text-[12px] text-muted-foreground">Made in Nepal 🇳🇵 for builders everywhere.</p>
 
+          <p className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
+            Made in Nepal <NepalFlag className="h-4 w-auto" /> for builders everywhere.
+          </p>
           {/* Copyright */}
           <p className="text-[12px] text-muted-foreground sm:text-right">
             &copy; {new Date().getFullYear()} Open Source Nepal. All rights reserved.

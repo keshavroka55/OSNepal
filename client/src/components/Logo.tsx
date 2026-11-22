@@ -9,5 +9,5 @@ const sizeMap: Record<Size, string> = {
 
 /** Open Source Nepal mark: a peak (Himalaya) with a crimson sun, in brand blue. */
 export default function Logo({ size = 'lg', alt = 'Open Source Nepal', className = '' }: { size?: Size; alt?: string; className?: string }) {
-  return <img src="/logo.svg" alt={alt} className={`${sizeMap[size]} rounded-lg ${className}`} />;
+  return <img src="/oslogo.png" alt={alt} className={`${sizeMap[size]} rounded-lg ${className}`} />;
 }

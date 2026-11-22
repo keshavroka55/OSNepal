@@ -1,11 +1,35 @@
+import { Rocket, GitFork, GraduationCap, Lightbulb, Cpu, type LucideIcon } from 'lucide-react';
 import type { ProjectStage, ProjectType } from './types';
 
-export const TYPE_META: Record<ProjectType, { label: string; plural: string; icon: string; tone: string; blurb: string }> = {
-  STARTUP: { label: 'Startup', plural: 'Startups', icon: '🚀', tone: 'bg-violet-500/10 text-violet-700 dark:text-violet-300', blurb: 'A venture with a business model' },
-  OPEN_SOURCE: { label: 'Open Source', plural: 'Open Source', icon: '⚡', tone: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300', blurb: 'Code anyone can use and improve' },
-  LEARNING: { label: 'Learning', plural: 'Learning', icon: '🎓', tone: 'bg-sky-500/10 text-sky-700 dark:text-sky-300', blurb: 'Build to learn, with mentors and peers' },
-  IDEA: { label: 'Idea', plural: 'Ideas', icon: '💡', tone: 'bg-amber-500/10 text-amber-700 dark:text-amber-300', blurb: 'Not built yet; looking for validation' },
-  HARDWARE: { label: 'Hardware', plural: 'Hardware', icon: '🔌', tone: 'bg-rose-500/10 text-rose-700 dark:text-rose-300', blurb: 'IoT, robotics and physical products' },
+export const TYPE_META: Record<
+  ProjectType,
+  { label: string; plural: string; icon: LucideIcon; tone: string; blurb: string }
+> = {
+  STARTUP: {
+    label: 'Startup', plural: 'Startups', icon: Rocket,
+    tone: 'bg-violet-500/10 text-violet-700 ring-violet-500/20 dark:text-violet-300',
+    blurb: 'A venture with a business model',
+  },
+  OPEN_SOURCE: {
+    label: 'Open Source', plural: 'Open Source', icon: GitFork,
+    tone: 'bg-emerald-500/10 text-emerald-700 ring-emerald-500/20 dark:text-emerald-300',
+    blurb: 'Code anyone can use and improve',
+  },
+  LEARNING: {
+    label: 'Learning', plural: 'Learning', icon: GraduationCap,
+    tone: 'bg-sky-500/10 text-sky-700 ring-sky-500/20 dark:text-sky-300',
+    blurb: 'Build to learn, with mentors and peers',
+  },
+  IDEA: {
+    label: 'Idea', plural: 'Ideas', icon: Lightbulb,
+    tone: 'bg-amber-500/10 text-amber-700 ring-amber-500/20 dark:text-amber-300',
+    blurb: 'Not built yet; looking for validation',
+  },
+  HARDWARE: {
+    label: 'Hardware', plural: 'Hardware', icon: Cpu,
+    tone: 'bg-rose-500/10 text-rose-700 ring-rose-500/20 dark:text-rose-300',
+    blurb: 'IoT, robotics and physical products',
+  },
 };
 
 export const STAGE_META: Record<ProjectStage, { label: string }> = {

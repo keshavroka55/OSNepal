@@ -19,11 +19,14 @@ export function UserAvatar({ user, size = 'md', className }: { user: Pick<Person
 export function ProjectLogo({ project, size = 'md' }: { project: { name: string; logo?: string | null; type: ProjectType }; size?: 'sm' | 'md' | 'lg' }) {
   const s = { sm: 'size-9 text-base', md: 'size-12 text-xl', lg: 'size-20 text-3xl' }[size];
   const src = imgUrl(project.logo);
+  const TypeIcon = TYPE_META[project.type].icon;
+
   return src ? (
     <img src={src} alt="" className={cn(s, 'shrink-0 rounded-lg border border-border bg-surface object-cover')} />
   ) : (
-    <span aria-hidden className={cn(s, 'flex shrink-0 items-center justify-center rounded-lg border border-border bg-surface-raised')}>{TYPE_META[project.type].icon}</span>
-  );
+    <span aria-hidden className={cn(s, 'flex shrink-0 items-center justify-center rounded-lg border border-border bg-surface-raised')}>
+      <TypeIcon className="h-1/2 w-1/2" />
+    </span>);
 }
 
 export function TypeBadge({ type }: { type: ProjectType }) {

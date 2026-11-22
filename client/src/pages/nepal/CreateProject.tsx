@@ -72,11 +72,16 @@ export default function CreateProject() {
             <fieldset>
               <legend className="mb-2 text-sm font-medium">What kind of project is it?</legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {TYPES.map((t) => (
-                  <button key={t} type="button" aria-pressed={f.type === t} onClick={() => { set('type', t); if (t === 'IDEA') set('stage', 'IDEA'); }} className={cn('rounded-lg border p-3 text-left', f.type === t ? 'border-primary bg-primary/8' : 'border-border hover:border-primary/50')}>
-                    <span className="text-lg" aria-hidden>{TYPE_META[t].icon}</span><p className="text-sm font-semibold">{TYPE_META[t].label}</p><p className="text-[11px] leading-tight text-text-muted">{TYPE_META[t].blurb}</p>
-                  </button>
-                ))}
+                {TYPES.map((t) => {
+                  const Icon = TYPE_META[t].icon;
+                  return (
+                    <div key={t} /* your existing wrapper props */>
+                      <Icon className="h-5 w-5" aria-hidden />
+                      <p className="text-sm font-semibold">{TYPE_META[t].label}</p>
+                      <p className="text-[11px] leading-tight text-text-muted">{TYPE_META[t].blurb}</p>
+                    </div>
+                  );
+                })}
               </div>
             </fieldset>
             <Field label="Project name" htmlFor="name"><input id="name" required maxLength={80} className={inputCls} value={f.name} onChange={(e) => set('name', e.target.value)} /></Field>

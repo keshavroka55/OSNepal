@@ -8,6 +8,7 @@ import { SortTabs } from '../../features/ecosystem/components/SortTabs';
 import { usePostFeed } from '../../features/ecosystem/hooks/usePostFeed';
 import { compactNumber } from '../../features/ecosystem/relativeTime';
 import type { SortKey, Space } from '../../features/ecosystem/types';
+import { getSpaceIcon } from '../../features/ecosystem/spaceIcons';
 
 const SORTS: { value: SortKey; label: string }[] = [
   { value: 'hot', label: 'Hot' },
@@ -53,14 +54,20 @@ export default function EcosystemPage() {
             <p className="text-sm text-text-muted">No spaces yet.</p>
           ) : (
             <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
-              {spaces.map((s) => (
-                <li key={s.id}>
-                  <Link to={`/ecosystem/s/${s.slug}`} className="flex min-h-11 items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-surface-raised">
-                    <span className="font-medium">{s.icon} {s.name}</span>
-                    <span className="tabular text-xs text-text-muted">{compactNumber(s.memberCount)}</span>
-                  </Link>
-                </li>
-              ))}
+              {spaces.map((s) => {
+                const Icon = getSpaceIcon(s.icon);
+                return (
+                  <li key={s.id}>
+                    <Link to={`/ecosystem/s/${s.slug}`} className="flex min-h-11 items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-surface-raised">
+                      <span className="inline-flex items-center gap-2 font-medium">
+                        <Icon className="h-4 w-4 text-text-muted" aria-hidden />
+                        {s.name}
+                      </span>
+                      <span className="tabular text-xs text-text-muted">{compactNumber(s.memberCount)}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </aside>

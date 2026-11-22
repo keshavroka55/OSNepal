@@ -54,9 +54,25 @@ export default function Discover({ presetType }: { presetType?: 'STARTUP' | 'OPE
       {!presetType && (
         <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label="Project type">
           <button onClick={() => set('type', '')} aria-pressed={!type} className={cn('rounded-full border px-3.5 py-1.5 text-sm font-medium', !type ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-text-muted hover:border-primary/50')}>All</button>
-          {TYPES.map((t) => (
-            <button key={t} onClick={() => set('type', t)} aria-pressed={type === t} className={cn('rounded-full border px-3.5 py-1.5 text-sm font-medium', type === t ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-text-muted hover:border-primary/50')}>{TYPE_META[t].icon} {TYPE_META[t].plural}</button>
-          ))}
+          {TYPES.map((t) => {
+            const Icon = TYPE_META[t].icon;
+            return (
+              <button
+                key={t}
+                onClick={() => set('type', t)}
+                aria-pressed={type === t}
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium',
+                  type === t
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-border text-text-muted hover:border-primary/50'
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {TYPE_META[t].plural}
+              </button>
+            );
+          })}
         </div>
       )}
 

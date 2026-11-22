@@ -6,11 +6,13 @@ import { joinSpace, leaveSpace } from '../api/ecosystemApi';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import { compactNumber } from '../relativeTime';
 import type { Space } from '../types';
+import { getSpaceIcon } from '../spaceIcons';
 
 export function SpaceSidebar({ space, onChange }: { space: Space; onChange: (s: Space) => void }) {
   const requireAuth = useRequireAuth();
   const [busy, setBusy] = useState(false);
   const joined = Boolean(space.viewerRole);
+  const SpaceIcon = getSpaceIcon(space.icon);
 
   const toggle = async () => {
     if (!requireAuth('join this space')) return;
@@ -32,8 +34,10 @@ export function SpaceSidebar({ space, onChange }: { space: Space; onChange: (s: 
   return (
     <aside aria-label={`About ${space.name}`} className="space-y-4 rounded-lg border border-border bg-surface p-4 text-sm">
       <div>
-        <h2 className="text-base font-semibold">{space.icon} {space.name}</h2>
-        <p className="mt-1 text-text-muted">{space.description}</p>
+        <h2 className="inline-flex items-center gap-2 text-base font-semibold">
+          <SpaceIcon className="h-4 w-4 text-text-muted" aria-hidden />
+          {space.name}
+        </h2>        <p className="mt-1 text-text-muted">{space.description}</p>
         <p className="mt-2 text-text-muted"><span className="tabular font-medium text-text">{compactNumber(space.memberCount)}</span> members</p>
       </div>
 

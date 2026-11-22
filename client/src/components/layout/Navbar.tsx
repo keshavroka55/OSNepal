@@ -175,9 +175,9 @@ export function Navbar() {
 
         {/* Mobile Right Section */}
         <div className="md:hidden flex items-center gap-2">
-          <ThemeToggle className="h-9 w-9" />
+          {/* <ThemeToggle className="h-9 w-9" /> */}
 
-          {/* Messages */}
+          {/* Messages
           <button
             onClick={() => {
               if (user) {
@@ -192,12 +192,12 @@ export function Navbar() {
             <MessageCircle className="h-6 w-6" />
 
             {/* Show unread count only for authenticated users */}
-            {user && unreadTotal > 0 && (
+            {/* {user && unreadTotal > 0 && (
               <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[9px] font-semibold leading-none text-primary-foreground">
                 {unreadTotal > 99 ? '99+' : unreadTotal}
               </span>
             )}
-          </button>
+          </button> */}
 
           {/* Mobile Menu */}
           <button

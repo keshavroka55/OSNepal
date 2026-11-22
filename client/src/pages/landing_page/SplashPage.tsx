@@ -22,6 +22,7 @@ const IMAGES = {
   pains: '/images/building-alone.jpg',
 };
 
+
 const PAINS = [
   { icon: Lightbulb, title: 'Ideas die in silence', body: 'You plan alone, build for months, then learn nobody needed it. Share the idea first and get outside validation while it is cheap to change.' },
   { icon: Users, title: 'Teams are hard to find', body: 'The coder with no designer. The student who wants real experience. Search by skill and send a join request in one click.' },

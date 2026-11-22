@@ -69,6 +69,16 @@ export function AdminInvestorMarks() {
   const q = useAsync(() => markQueue(status), [status]);
   const investors = useAsync(async () => (await api.get<{ id: string; name: string; email: string; verified: boolean }[]>('/api/investors/admin/accounts')).data, []);
   const decide = async (id: string, s: 'APPROVED' | 'REJECTED') => { try { await reviewMark(id, s); notify.success(s === 'APPROVED' ? 'Investor mark granted' : 'Request declined'); q.reload(); } catch (e) { notify.error(errMsg(e)); } };
+  const toggleVerify = async (u: { id: string; verified: boolean }) => {
+    try {
+      await verifyUser(u.id, !u.verified);
+      notify.success(u.verified ? 'Verification removed' : 'Investor verified');
+      investors.reload();
+      q.reload();
+    } catch (e) {
+      notify.error(errMsg(e));
+    }
+  };
   return (
     <div className="mx-auto max-w-5xl p-4 sm:p-6">
       <SEO title="Investor marks" url="/dashboard/investor-marks" noindex />
@@ -92,8 +102,15 @@ export function AdminInvestorMarks() {
       <h2 className="mb-3 mt-10 flex items-center gap-2 text-lg font-semibold"><ShieldCheck className="size-5 text-primary" aria-hidden />Investor accounts</h2>
       <Card className="divide-y divide-border p-0">
         {investors.data?.length ? investors.data.map((u) => (
-          <div key={u.id} className="flex items-center gap-3 p-3 text-sm"><span className="flex-1"><span className="font-medium">{u.name}</span> <span className="text-text-muted">{u.email}</span></span>
-            <Btn size="sm" variant={u.verified ? 'outline' : 'primary'} onClick={async () => { await verifyUser(u.id, !u.verified); notify.success(u.verified ? 'Verification removed' : 'Investor verified'); investors.reload(); q.reload(); }}>{u.verified ? 'Remove verification' : 'Verify investor'}</Btn></div>
+          <div key={u.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
+            <span className="min-w-0 flex-1">
+              <Link to={`/profile/${u.id}`} className="font-medium text-primary hover:underline">{u.name}</Link>{' '}
+              <span className="break-all text-text-muted">{u.email}</span>
+            </span>
+            <Btn size="sm" variant={u.verified ? 'outline' : undefined} onClick={() => toggleVerify(u)}>
+              {u.verified ? 'Remove verification' : 'Verify investor'}
+            </Btn>
+          </div>
         )) : <p className="p-4 text-sm text-text-muted">No investor accounts yet.</p>}
       </Card>
     </div>

@@ -2,6 +2,8 @@ import express from 'express';
 import * as AdminController from './admin.controller.js';
 import { verifyToken } from '../../middleware/authMiddleware.js';
 import { allowRoles } from '../../middleware/role.middleware.js';
+import * as AdminService from './admin.service.js';
+
 
 const router = express.Router();
 

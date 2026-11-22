@@ -37,6 +37,7 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: 'Contribute', path: `${REPO}/blob/main/CONTRIBUTING.md`, external: true },
     { label: 'Report an issue', path: `${REPO}/issues`, external: true },
     { label: 'Contributors', path: `${REPO}/graphs/contributors`, external: true },
+    { label: 'Connet With Me', path: `https://keshavroka.com.np`, external: true },
   ],
 };
 

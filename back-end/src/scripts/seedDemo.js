@@ -16,7 +16,7 @@ const PASSWORD = process.env.DEMO_PASSWORD || "OpenSourceNepal1!";
 const CATEGORIES = ["Education", "Agriculture", "Developer Tools", "Healthcare", "Climate", "FinTech", "Civic Tech", "Tourism", "E-commerce", "Hardware & IoT"];
 
 const USERS = [
-  { name: "Keshav Roka", username: "keshav", role: "developer", headline: "Full-Stack Developer", location: "Kathmandu", bio: "Building tools for Nepal's developer ecosystem. Passionate about open source and education tech.", skills: ["React", "Node.js", "PostgreSQL", "TypeScript", "Docker"], githubUrl: "https://github.com/keshav" },
+  { name: "Keshav Roka", username: "keshav", role: "developer", headline: "Full-Stack Developer", location: "Kathmandu", bio: "Building tools for Nepal's developer ecosystem. Passionate about open source and education tech.", skills: ["React", "Node.js", "PostgreSQL", "TypeScript", "Docker"], githubUrl: "https://github.com/keshavroka55" },
   { name: "Anisha Shrestha", username: "anisha", role: "developer", headline: "UI/UX Designer", location: "Lalitpur", bio: "Design systems and product thinking. Making complex things simple.", skills: ["Figma", "React", "CSS", "User Research"] },
   { name: "Bikash Thapa", username: "bikash", role: "developer", headline: "Backend Engineer", location: "Pokhara", bio: "APIs, databases and distributed systems. Go and Rust enthusiast.", skills: ["Go", "Rust", "PostgreSQL", "Redis", "Kubernetes"] },
   { name: "Priya Karki", username: "priya", role: "developer", headline: "Founder & Product Manager", location: "Kathmandu", bio: "Building AgriNepal. Interested in AgriTech and climate solutions.", skills: ["Product", "Strategy", "Growth", "User Research"] },

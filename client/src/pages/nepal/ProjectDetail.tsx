@@ -69,11 +69,11 @@ export default function ProjectDetail() {
           <ProjectLogo project={project} size="lg" />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold">{project.name}</h1>
+              <h1 className="break-words text-2xl font-bold">{project.name}</h1>
               <TypeBadge type={project.type} /><StageBadge stage={project.stage} />
               {project.investorBacked && <InvestorMark />}
             </div>
-            <p className="mt-1 text-text-muted">{project.tagline}</p>
+            <h1 className="break-words text-2xl font-bold">{project.name}</h1>
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-muted">
               <Link to={`/u/${project.founder.username ?? project.founder.id}`} className="flex items-center gap-2 hover:text-text"><UserAvatar user={project.founder} size="xs" />{project.founder.name}{project.founder.verified && <VerifiedTick />}</Link>
               <span>{project.category?.name}</span>
@@ -92,8 +92,8 @@ export default function ProjectDetail() {
         </div>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0">
           <div role="tablist" className="mb-4 flex gap-1 overflow-x-auto border-b border-border">
             {tabs.map(([k, label]) => (
               <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn('-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium', tab === k ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text')}>{label}</button>
@@ -142,7 +142,7 @@ export default function ProjectDetail() {
 
 function Section({ title, children }: { title: string; children?: React.ReactNode }) {
   if (!children) return null;
-  return <Card className="mb-4"><h2 className="mb-2 font-semibold">{title}</h2><div className="whitespace-pre-line text-sm leading-relaxed text-text-muted">{children}</div></Card>;
+  return <Card className="mb-4"><h2 className="mb-2 font-semibold">{title}</h2><div className="whitespace-pre-line break-words text-sm leading-relaxed text-text-muted">{children}</div></Card>;
 }
 
 function Overview({ p }: { p: Project }) {
@@ -152,12 +152,23 @@ function Overview({ p }: { p: Project }) {
       <Section title="The problem">{p.problem}</Section>
       <Section title="Our solution">{p.solution}</Section>
       <Section title="Who it is for">{p.targetUsers}</Section>
-      {p.features.length > 0 && <Card className="mb-4"><h2 className="mb-2 font-semibold">Key features</h2><ul className="grid gap-1.5 text-sm text-text-muted sm:grid-cols-2">{p.features.map((f) => <li key={f} className="flex gap-2"><span className="text-success">✓</span>{f}</li>)}</ul></Card>}
+      {p.features.length > 0 && <Card className="mb-4"><h2 className="mb-2 font-semibold">Key features</h2>
+        <ul className="grid grid-cols-1 gap-1.5 text-sm text-text-muted sm:grid-cols-2">
+          {p.features.map((f) => (
+            <li key={f} className="flex min-w-0 gap-2">
+              <span className="shrink-0 text-success">✓</span>
+              <span className="min-w-0 break-words">{f}</span>
+            </li>
+          ))}
+        </ul>
+      </Card>}
       {p.roadmap && p.roadmap.length > 0 && (
         <Card><h2 className="mb-3 font-semibold">Roadmap</h2>
           <ol className="space-y-3">{p.roadmap.map((r, i) => (
-            <li key={i} className="flex items-center gap-3 text-sm"><span className={cn('size-2.5 rounded-full', r.status === 'done' ? 'bg-success' : r.status === 'in-progress' ? 'bg-warning' : 'bg-border')} /><span className="flex-1 font-medium">{r.title}</span><span className="text-xs capitalize text-text-muted">{r.status.replace('-', ' ')}</span></li>
-          ))}</ol>
+            <li key={i} className="flex items-center gap-3 text-sm">
+              <span className={cn('size-2.5 shrink-0 rounded-full', r.status === 'done' ? 'bg-success' : r.status === 'in-progress' ? 'bg-warning' : 'bg-border')} />              <span className="min-w-0 flex-1 break-words font-medium">{r.title}</span>
+              <span className="shrink-0 text-xs capitalize text-text-muted">{r.status.replace('-', ' ')}</span>
+            </li>))}</ol>
         </Card>
       )}
     </>
@@ -167,11 +178,14 @@ function Overview({ p }: { p: Project }) {
 function Team({ p }: { p: Project }) {
   const people = [{ id: 'owner', role: 'Founder', user: p.founder }, ...(p.members ?? [])];
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {people.map((m) => (
-        <Link key={m.id} to={`/u/${m.user.username ?? m.user.id}`} className="flex items-center gap-3 rounded-lg border border-border bg-surface p-4 hover:border-primary/50">
+        <Link key={m.id} to={`/u/${m.user.username ?? m.user.id}`} className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-surface p-4 hover:border-primary/50">
           <UserAvatar user={m.user} size="lg" />
-          <div className="min-w-0"><p className="truncate font-semibold">{m.user.name}{m.user.verified && <VerifiedTick className="ml-1" />}</p><p className="text-sm text-primary">{m.role}</p><p className="truncate text-xs text-text-muted">{m.user.headline}</p></div>
+          <div className="min-w-0 basis-full sm:basis-72 sm:flex-1">            <p className="truncate font-semibold">{m.user.name}{m.user.verified && <VerifiedTick className="ml-1" />}</p>
+            <p className="truncate text-sm text-primary">{m.role}</p>
+            <p className="truncate text-xs text-text-muted">{m.user.headline}</p>
+          </div>
         </Link>
       ))}
     </div>
@@ -180,12 +194,12 @@ function Team({ p }: { p: Project }) {
 
 function Thread({ c, onReply, depth = 0 }: { c: ProjectComment; onReply: (id: string) => void; depth?: number }) {
   return (
-    <div className={cn(depth > 0 && 'ml-8 border-l border-border pl-4')}>
+    <div className={cn(depth > 0 && 'ml-3 border-l border-border pl-3 sm:ml-8 sm:pl-4')}>
       <div className="flex gap-3 py-3">
         <UserAvatar user={c.user} size="sm" />
         <div className="min-w-0 flex-1">
           <p className="text-sm"><span className="font-semibold">{c.user.name}</span> <span className="text-xs text-text-muted">{timeAgo(c.createdAt)}</span></p>
-          <p className="mt-0.5 whitespace-pre-line text-sm">{c.content}</p>
+          <p className="mt-0.5 whitespace-pre-line break-words text-sm">{c.content}</p>
           {depth < 2 && <button onClick={() => onReply(c.id)} className="mt-1 text-xs font-medium text-text-muted hover:text-primary">Reply</button>}
         </div>
       </div>
@@ -232,12 +246,12 @@ function Contributions({ p, isOwner, isMember, onAdd }: { p: Project; isOwner: b
             <div className="flex items-start gap-3">
               <UserAvatar user={c.user} size="sm" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">{c.title} {c.verified && <span className="ml-1 rounded bg-success/10 px-1.5 py-0.5 text-[11px] font-medium text-success">Verified by owner</span>}</p>
+                <p className="break-words text-sm font-semibold">{c.title} {c.verified && <span className="ml-1 rounded bg-success/10 px-1.5 py-0.5 text-[11px] font-medium text-success">Verified by owner</span>}</p>
                 <p className="text-xs text-text-muted">{c.user.name} · {timeAgo(c.createdAt)}</p>
-                {c.description && <p className="mt-1 text-sm text-text-muted">{c.description}</p>}
-                {c.url && <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-primary hover:underline">View work ↗</a>}
+                {c.description && <p className="mt-1 break-words text-sm text-text-muted">{c.description}</p>}
+                {c.url && <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block break-all text-xs text-primary hover:underline">View work ↗</a>}
               </div>
-              {isOwner && !c.verified && <Btn size="sm" variant="outline" onClick={async () => { await verifyContribution(c.id); notify.success('Verified'); reload(); }}>Verify</Btn>}
+              {isOwner && !c.verified && <div className="shrink-0"><Btn size="sm" variant="outline" onClick={async () => { await verifyContribution(c.id); notify.success('Verified'); reload(); }}>Verify</Btn></div>}
             </div>
           </Card>
         ))}</div>

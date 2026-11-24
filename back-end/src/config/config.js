@@ -41,8 +41,8 @@ if (!parsed.success) {
 export const config = {
   ...parsed.data,
   isProduction: parsed.data.NODE_ENV === "production",
-allowedOrigins: (parsed.data.ALLOWED_ORIGINS || parsed.data.CLIENT_URL)
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean),
+  allowedOrigins: (parsed.data.ALLOWED_ORIGINS || parsed.data.CLIENT_URL)
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean),
 };

@@ -117,9 +117,9 @@ export default function Profile({ own = false }: { own?: boolean }) {
 
       {tab === 'projects' && (
         p.startups.length + p.memberships.length === 0 ? <EmptyState title="No projects yet" action={isMe ? <Link to="/create"><Btn>Share a project</Btn></Link> : undefined} /> : (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {p.startups.map((s) => (
-              <Link key={s.id} to={`/projects/${s.slug}`} className="flex items-center gap-3 rounded-lg border border-border bg-surface p-3 hover:border-primary/50 sm:p-4">
+              <Link key={s.id} to={`/projects/${s.slug}`} className="flex min-w-0  items-center gap-3 rounded-lg border border-border bg-surface p-3 hover:border-primary/50 sm:p-4">
                 <ProjectLogo project={{ ...s, type: 'STARTUP' }} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{s.name}</p>

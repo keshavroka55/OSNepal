@@ -47,12 +47,11 @@ export default function Home() {
         <Stat label="Badges" value={badges.data?.length ?? '–'} />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="space-y-8">
-          <section>
-            <div className="mb-3 flex items-center justify-between"><h2 className="flex items-center gap-2 text-lg font-semibold"><Sparkles className="size-4 text-primary" aria-hidden />{hasMatch ? 'Looking for people like you' : 'Trending projects'}</h2><Link to="/discover" className="text-sm font-medium text-primary hover:underline">See all</Link></div>
-            <ProjectGrid items={matched} loading={fresh.loading} error={fresh.error} onRetry={fresh.reload} />
-          </section>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0 space-y-8">          <section>
+          <div className="mb-3 flex items-center justify-between"><h2 className="flex items-center gap-2 text-lg font-semibold"><Sparkles className="size-4 text-primary" aria-hidden />{hasMatch ? 'Looking for people like you' : 'Trending projects'}</h2><Link to="/discover" className="text-sm font-medium text-primary hover:underline">See all</Link></div>
+          <ProjectGrid items={matched} loading={fresh.loading} error={fresh.error} onRetry={fresh.reload} />
+        </section>
           <section>
             <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-semibold">Hot ideas</h2><Link to="/ideas" className="text-sm font-medium text-primary hover:underline">All ideas</Link></div>
             <Card className="divide-y divide-border p-0">
@@ -63,7 +62,7 @@ export default function Home() {
           </section>
         </div>
 
-        <aside className="space-y-6">
+        <aside className="min-w-0 space-y-6">
           <Card>
             <h2 className="mb-3 flex items-center gap-2 font-semibold"><Trophy className="size-4 text-amber-500" aria-hidden />Top builders</h2>
             <ul className="space-y-3">{people.data?.map((p, i) => (

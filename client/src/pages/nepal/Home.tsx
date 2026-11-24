@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, FolderKanban, Inbox, Plus, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, FolderKanban, Inbox, Plus, Sparkles, Trophy, HandHeart } from 'lucide-react';
 import { SEO } from '../../components/SEO';
 import { ProjectGrid } from '../../components/nepal/ProjectGrid';
 import { BadgeChip, Btn, Card, Stat, UserAvatar } from '../../components/nepal/ui';
@@ -24,14 +24,18 @@ export default function Home() {
   const all = (fresh.data?.data ?? []).filter((p) => p.founder.id !== user.id);
   const matched = [...all].sort((a, b) => score(b) - score(a) || b.totalVotes - a.totalVotes).slice(0, 6);
   const hasMatch = matched.some((p) => score(p) > 0);
+  const firstName = user.name.split(' ')[0];
+
 
   return (
     <>
       <SEO title="Home" url="/home" noindex />
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Namaste, {user.name.split(' ')[0]} 🙏</h1>
-          <p className="text-sm text-text-muted">{user.role === 'investor' ? 'Fresh projects and traction from across Nepal.' : 'What will you build or help build today?'}</p>
+          <h1 className="flex items-center gap-2 text-2xl font-bold">
+            <span lang="ne">नमस्ते</span>, {firstName}
+            <HandHeart className="size-6 text-primary" aria-hidden />
+          </h1>          <p className="text-sm text-text-muted">{user.role === 'investor' ? 'Fresh projects and traction from across Nepal.' : 'What will you build or help build today?'}</p>
         </div>
         {user.role === 'investor' ? <Link to="/investor"><Btn>Open deal flow <ArrowRight className="size-4" /></Btn></Link> : <Link to="/create"><Btn><Plus className="size-4" />Share a project</Btn></Link>}
       </div>

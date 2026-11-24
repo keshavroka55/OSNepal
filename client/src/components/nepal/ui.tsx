@@ -4,6 +4,8 @@ import { Heart, MessageSquare, Users, ShieldCheck, BadgeCheck, Loader2, Inbox } 
 import { STAGE_META, TYPE_META, imgUrl } from '../../features/nepal/meta';
 import type { BadgeDef, Person, Project, ProjectStage, ProjectType, Ranking } from '../../features/nepal/types';
 import { cn } from '../ui/utils';
+import { getBadgeIcon } from '../../features/nepal/badgeIcons';
+
 
 export function UserAvatar({ user, size = 'md', className }: { user: Pick<Person, 'name' | 'avatar'>; size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'; className?: string }) {
   const sizes = { xs: 'size-6 text-[10px]', sm: 'size-8 text-xs', md: 'size-10 text-sm', lg: 'size-14 text-base', xl: 'size-24 text-2xl' };
@@ -64,10 +66,14 @@ const TIER: Record<string, string> = {
   silver: 'border-slate-400/40 bg-slate-400/10',
   gold: 'border-amber-500/40 bg-amber-500/10',
 };
+
 export function BadgeChip({ badge, earned = true }: { badge: BadgeDef; earned?: boolean }) {
+  const Icon = getBadgeIcon(badge);
   return (
     <div className={cn('flex items-center gap-3 rounded-lg border p-3', earned ? TIER[badge.tier] ?? TIER.bronze : 'border-border opacity-50 grayscale')}>
-      <span className="text-2xl" aria-hidden>{badge.icon}</span>
+      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-background/60 ring-1 ring-inset ring-black/5 dark:ring-white/10">
+        <Icon className="size-5" aria-hidden />
+      </span>
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold">{badge.name}</p>
         <p className="line-clamp-2 text-xs text-text-muted">{badge.description}</p>

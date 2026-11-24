@@ -11,6 +11,43 @@ import { cn } from '../../components/ui/utils';
 
 const STEPS = ['Basics', 'Problem & solution', 'Team & links'];
 
+
+// Strip protocol (and the github host) so the state only holds what the user types.
+const fromWebsiteUrl = (u?: string | null) => (u ?? '').replace(/^https?:\/\//i, '');
+const fromGithubUrl = (u?: string | null) => (u ?? '').replace(/^(https?:\/\/)?(www\.)?github\.com\/?/i, '');
+
+// Build the full URL for the API (or null when empty).
+const toWebsiteUrl = (v: string) => {
+  const d = v.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+  return d ? `https://${d}` : null;
+};
+const toGithubUrl = (v: string) => {
+  const p = fromGithubUrl(v.trim()).replace(/^\/+|\/+$/g, '');
+  return p ? `https://github.com/${p}` : null;
+};
+
+function PrefixInput({ id, prefix, value, onChange, placeholder, invalid }: {
+  id: string; prefix: string; value: string; onChange: (v: string) => void; placeholder: string; invalid?: boolean;
+}) {
+  return (
+    <div className={cn('flex items-stretch overflow-hidden rounded-md border bg-background focus-within:ring-2 focus-within:ring-primary/30', invalid ? 'border-danger' : 'border-border focus-within:border-primary')}>
+      <span className="flex shrink-0 select-none items-center border-r border-border bg-surface-raised px-3 text-sm text-text-muted">{prefix}</span>
+      <input
+        id={id}
+        type="text"
+        inputMode="url"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-text-muted"
+      />
+    </div>
+  );
+}
+
 export default function CreateProject() {
   const { slug } = useParams();
   const editing = !!slug;
@@ -30,23 +67,25 @@ export default function CreateProject() {
   useEffect(() => {
     const p = existing.data;
     if (!p) return;
-    setF({ name: p.name, tagline: p.tagline, description: p.description, type: p.type, stage: p.stage, categoryId: p.category.id, problem: p.problem ?? '', solution: p.solution ?? '', targetUsers: p.targetUsers ?? '', features: p.features, tags: p.tags.map((t) => t.name), lookingFor: p.lookingFor, websiteUrl: p.websiteUrl ?? '', githubUrl: p.githubUrl ?? '', openToFeedback: p.openToFeedback });
+    setF({ name: p.name, tagline: p.tagline, description: p.description, type: p.type, stage: p.stage, categoryId: p.category.id, problem: p.problem ?? '', solution: p.solution ?? '', targetUsers: p.targetUsers ?? '', features: p.features, tags: p.tags.map((t) => t.name), lookingFor: p.lookingFor, websiteUrl: fromWebsiteUrl(p.websiteUrl), githubUrl: fromGithubUrl(p.githubUrl), openToFeedback: p.openToFeedback });
   }, [existing.data]);
 
   if (editing && existing.loading) return <Spinner />;
   if (editing && existing.error) return <ErrorNote message={existing.error} />;
 
+  const websiteOk = !f.websiteUrl.trim() || /^[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/i.test(f.websiteUrl.trim());
+const githubOk = !f.githubUrl.trim() || /^[A-Za-z0-9-]+(\/[\w.-]+)?\/?$/.test(f.githubUrl.trim());
+
   const valid = [
     f.name.trim().length >= 2 && f.tagline.trim().length >= 5 && f.description.trim().length >= 20 && !!f.categoryId,
     true,
-    true,
+    websiteOk && githubOk,
   ];
 
   const submit = async () => {
     setBusy(true);
     try {
-      const body = { ...f, websiteUrl: f.websiteUrl.trim() || null, githubUrl: f.githubUrl.trim() || null };
-      const saved = editing && existing.data ? await updateProject(existing.data.id, body) : await createProject(body);
+      const body = { ...f, websiteUrl: toWebsiteUrl(f.websiteUrl), githubUrl: toGithubUrl(f.githubUrl) }; const saved = editing && existing.data ? await updateProject(existing.data.id, body) : await createProject(body);
       notify.success(editing ? 'Project updated' : 'Your project is live!');
       navigate(`/projects/${saved.slug}`);
     } catch (e) { notify.error(errMsg(e)); } finally { setBusy(false); }
@@ -71,15 +110,32 @@ export default function CreateProject() {
           <>
             <fieldset>
               <legend className="mb-2 text-sm font-medium">What kind of project is it?</legend>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div role="radiogroup" aria-label="Project type" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {TYPES.map((t) => {
-                  const Icon = TYPE_META[t].icon;
+                  const { icon: Icon, tone, label, blurb } = TYPE_META[t];
+                  const selected = f.type === t;
                   return (
-                    <div key={t} /* your existing wrapper props */>
-                      <Icon className="h-5 w-5" aria-hidden />
-                      <p className="text-sm font-semibold">{TYPE_META[t].label}</p>
-                      <p className="text-[11px] leading-tight text-text-muted">{TYPE_META[t].blurb}</p>
-                    </div>
+                    <button
+                      key={t}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => set('type', t)}
+                      className={cn(
+                        'flex flex-col items-start gap-2 rounded-lg border p-3 text-left transition-colors',
+                        selected
+                          ? 'border-primary bg-primary/5 ring-2 ring-primary/30'
+                          : 'border-border bg-surface hover:border-primary/50',
+                      )}
+                    >
+                      <span className={cn('grid size-9 place-items-center rounded-lg', tone)}>
+                        <Icon className="size-5" aria-hidden />
+                      </span>
+                      <span>
+                        <span className="block text-sm font-semibold">{label}</span>
+                        <span className="block text-[11px] leading-tight text-text-muted">{blurb}</span>
+                      </span>
+                    </button>
                   );
                 })}
               </div>
@@ -109,8 +165,26 @@ export default function CreateProject() {
         {step === 2 && (
           <>
             <Field label="Who are you looking for?" hint="Developers, designers, marketing, a co-founder, mentors…"><ChipInput value={f.lookingFor} onChange={(v) => set('lookingFor', v)} suggestions={LOOKING_FOR_SUGGESTIONS} placeholder="Backend Developer…" /></Field>
-            <Field label="Website (optional)" htmlFor="web"><input id="web" type="url" className={inputCls} placeholder="https://" value={f.websiteUrl} onChange={(e) => set('websiteUrl', e.target.value)} /></Field>
-            <Field label="Repository (optional)" htmlFor="gh"><input id="gh" type="url" className={inputCls} placeholder="https://github.com/…" value={f.githubUrl} onChange={(e) => set('githubUrl', e.target.value)} /></Field>
+            <Field label="Website (optional)" htmlFor="web" hint={websiteOk ? 'Just the domain. We add https:// for you.' : 'Use a domain like example.com'}>
+              <PrefixInput
+                id="web"
+                prefix="https://"
+                placeholder="example.com"
+                value={f.websiteUrl}
+                invalid={!websiteOk}
+                onChange={(v) => set('websiteUrl', fromWebsiteUrl(v))}
+              />
+            </Field>
+            <Field label="Repository (optional)" htmlFor="gh" hint={githubOk ? 'Your username, or username/repository.' : 'Use username or username/repository'}>
+              <PrefixInput
+                id="gh"
+                prefix="github.com/"
+                placeholder="username/repository"
+                value={f.githubUrl}
+                invalid={!githubOk}
+                onChange={(v) => set('githubUrl', fromGithubUrl(v))}
+              />
+            </Field>
             <label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1" checked={f.openToFeedback} onChange={(e) => set('openToFeedback', e.target.checked)} /><span><span className="font-medium">I want feedback</span><br /><span className="text-text-muted">Show a feedback prompt to visitors.</span></span></label>
           </>
         )}

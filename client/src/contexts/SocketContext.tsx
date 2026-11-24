@@ -74,6 +74,26 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     socket.on('userOffline', handleUserOffline);
     socket.on('newMessage', handleNewMessage);
 
+    // socket issues 
+
+    socket.on("connect", () => {
+      console.log("✅ Socket connected!");
+      console.log("Socket ID:", socket.id);
+      console.log("Transport:", socket.io.engine.transport.name);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("❌ Socket connection failed:", error.message);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("⚠️ Socket disconnected:", reason);
+    });
+
+    socket.io.engine.on("upgrade", (transport) => {
+      console.log("🚀 Transport upgraded to:", transport.name);
+    });
+
 
     return () => {
       socket.off('connect', handleConnect);

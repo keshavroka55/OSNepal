@@ -1,8 +1,6 @@
 import app from "./src/app.js";
 import { config } from "./src/config/config.js";
-
 import http from "http";
-import * as cookie from 'cookie';
 import jwt from 'jsonwebtoken';
 import { Server } from "socket.io";
 import prisma from "./src/prisma.js";
@@ -21,26 +19,54 @@ const io = new Server(server, {
 });
 setIO(io);
 
-// Socket auth middleware — runs once per connection, before any events fire
+
+function parseCookies(header = "") {
+  return Object.fromEntries(
+    header
+      .split(";")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const index = part.indexOf("=");
+        return [part.slice(0, index), decodeURIComponent(part.slice(index + 1))];
+      })
+  );
+}
+
 io.use((socket, next) => {
   try {
-    const rawCookie = socket.handshake.headers.cookie;
+    // Turn "token=abc; refreshToken=xyz" into { token: "abc", refreshToken: "xyz" }
+    const cookies = parseCookies(socket.handshake.headers.cookie);
 
-    if (!rawCookie) return next(new Error('No cookie'));
+    if (!cookies.token) {
+      console.error("Socket Auth: Token not found");
+      return next(new Error("No token"));
+    }
 
-    const { token } = cookie.parse(rawCookie);
-    if (!token) return next(new Error('No token'));
+    const decoded = jwt.verify(cookies.token, config.JWT_SECRET);
 
-    const decoded = jwt.verify(token, config.JWT_SECRET);
     // JWT payload in this project uses { id, role }
     socket.userId = decoded.id || decoded.userId;
-    if (!socket.userId) return next(new Error('Invalid token payload'));
+
+    if (!socket.userId) {
+      console.error("Socket Auth: Invalid JWT payload");
+      return next(new Error("Invalid token payload"));
+    }
+
     next();
   } catch (err) {
-    next(new Error('Authentication failed'));
+    console.error("Socket Auth Error:", err.name, err.message);
+    next(new Error("Authentication failed"));
   }
 });
 
+
+io.engine.on("connection_error", (err) => {
+  console.error("Socket.IO connection error:", {
+    code: err.code,
+    message: err.message,
+  });
+});
 
 const onlineUsers = new Map(); // userId -> socketId
 

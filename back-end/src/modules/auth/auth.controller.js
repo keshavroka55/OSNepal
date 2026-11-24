@@ -13,7 +13,7 @@ const isProduction = config.NODE_ENV === "production";
 
 const tokenCookieOptions = {
   httpOnly: true,
-  sameSite: isProduction ? "none": "lax",
+  sameSite: isProduction ? "none" : "lax",
   secure: isProduction,
   path: "/",
 };
@@ -98,6 +98,7 @@ export const login = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        profileCompleted: user.profileCompleted,
       },
     });
   } catch (err) {

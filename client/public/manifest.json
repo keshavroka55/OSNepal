@@ -1,39 +1,21 @@
 {
+  "id": "/",
+  "name": "Open Source Nepal",
   "short_name": "OS Nepal",
-  "name": "Recipe Nest - Discover & Share Recipes",
-  "description": "Explore thousands of delicious recipes, share your culinary creations, and connect with food lovers worldwide.",
-  "icons": [
-    {
-      "src": "fav2.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
-    }
-  ],
+  "description": "Nepal's community for student developers, open-source contributors, designers and early founders. Share projects, find teammates and build a portfolio of real work.",
+  "lang": "en",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
-  "categories": ["food", "lifestyle", "social"],
-  "screenshots": [
+  "theme_color": "#f6f7f9",
+  "background_color": "#f6f7f9",
+  "categories": ["social", "productivity", "education"],
+  "icons": [
     {
-      "src": "/screenshot.png",
-      "sizes": "540x720",
+      "src": "/oslogo.png",
       "type": "image/png",
-      "form_factor": "narrow"
+      "sizes": "192x192 512x512",
+      "purpose": "any"
     }
   ]
 }

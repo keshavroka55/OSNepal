@@ -4,6 +4,27 @@
 
 Developers, students, designers, founders and investors share ideas, get outside feedback, find teammates and build open source projects and startups. Think Product Hunt + LinkedIn + GitHub, for Nepal.
 
+**Live site:** https://osnepal.keshavroka.com.np
+
+## Screenshots
+
+### Home
+![Home page](docs/screenshots/home.png)
+
+### Dashboard
+![User dashboard](docs/screenshots/dashboard.png)
+
+### Discover projects
+![Discover page with filters](docs/screenshots/discover.png)
+
+### Ideas & Feedback
+![Ideas and feedback board](docs/screenshots/ideas-feedback.png)
+
+### Investor deal flow
+![Investor deal flow ranked by traction](docs/screenshots/dealflow.png)
+
+
+
 ## What it does
 
 | Need | Feature |
@@ -17,7 +38,7 @@ Developers, students, designers, founders and investors share ideas, get outside
 | Investors | **Deal flow** ranked by traction. Request the **Investor mark** on a project; an **admin** approves it. Only admin-*verified* investors can ask. |
 | Admins | Console with stats, Investor-mark queue, investor verification, users, categories, moderation. |
 
-Roles: `developer`, `investor`, `admin`. Sign-up offers developer or investor; admins are created with `npm run create-admin`.
+Roles: `developer`, `investor`, `user`.
 
 ## Stack
 
@@ -25,9 +46,7 @@ Roles: `developer`, `investor`, `admin`. Sign-up offers developer or investor; a
 | --- | --- |
 | Client (`client/`) | React 19, Vite 7, TypeScript, Tailwind v4 (design tokens in `src/styles/tokens.css`, light + dark), React Router 7, Socket.io client |
 | API (`back-end/`) | Express 5 (ESM), Prisma 7 + PostgreSQL, Redis cache-aside, Socket.io, JWT in httpOnly cookies, Google OAuth, Zod |
-| Deploy | Docker Compose behind Nginx, GitHub Actions |
-
-This project grew from the MakeSuperAI launch-platform codebase (auth, projects, likes, comments, bookmarks, connections, real-time chat, ecosystem, moderation, CI/deploy) and adds the Open Source Nepal layer on top.
+| Deploy | Client on Vercel. API, PostgreSQL and Redis with Docker Compose behind Nginx on a VPS. CI with GitHub Actions |
 
 ## Run locally
 
@@ -40,7 +59,6 @@ npx prisma migrate dev
 ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='a-strong-password' npm run create-admin
 npm run seed:spaces           # Ideas, Feedback, Co-founder Hub, ...
 npm run seed:badges
-npm run seed:demo             # optional: Nepal-flavoured demo users and projects (dev only)
 npm run dev                   # http://localhost:8000
 
 # 2. Client
@@ -50,13 +68,11 @@ npm install
 npm run dev                   # http://localhost:3000
 ```
 
-Demo logins after `seed:demo` (password `OpenSourceNepal1!`): `keshav@example.com` (developer), `rajan@example.com` (verified investor). Run `create-admin` first and re-run `seed:demo` to get an approved Investor mark.
 
 ## Checks
 
 ```bash
-cd back-end && npm test                                   # Vitest + Supertest
-cd client && npm run typecheck && npm run build:check     # types, build, bundle budget
+cd back-end && npm test
 ```
 
 ## Where things are
@@ -70,12 +86,15 @@ back-end/src/modules/
   notifications/  persisted + pushed over Socket.io
   people/         directory, skills, summary
   leaderboards/   /rankings with period/type/category filters
+  seo/            sitemap.xml generated from projects and profiles
 client/src/
   components/shell/AppShell.tsx   sidebar + topbar, role-aware nav
   components/nepal/ui.tsx         shared building blocks
   features/nepal/                 types, API client, labels
   pages/nepal/                    Home, Discover, ProjectDetail, CreateProject, People,
                                   Leaderboard, Ideas, Profile, Workspace, Investor, Onboarding
+client/public/                    robots.txt, social preview images, manifest
+deploy/nginx/                     Nginx config for the API server
 ```
 
 ## Rules worth knowing
@@ -85,16 +104,15 @@ client/src/
 - Accepting a join request also creates an accepted connection so teammates can message each other.
 - Reputation: +2 per like received, +5 for a join accepted (both sides), +10 per verified contribution.
 
-## Docs
 
-- [Architecture](docs/ARCHITECTURE.md) · [API reference](docs/API.md) · [Deploying](docs/DEPLOY.md) · [Production readiness](docs/PRODUCTION_READINESS.md)
+## Contributing
 
-## Original Project
+Contributions are welcome, whether you are a student making a first pull request or an experienced developer.
 
-This project is based on Open Source Nepal.
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md).
+2. Pick an issue labelled `good first issue` or `help wanted`.
+3. Open a pull request with a short description of what changed and why.
 
-Original Repository: https://github.com/keshavroka55/OSNepal
+## License
 
-Original Website: https://osnepal.com
-
-# OSNepal
+[MIT](LICENSE)

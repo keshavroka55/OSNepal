@@ -1,13 +1,15 @@
-# Recipe Nest - https://www.robotstxt.org/robotstxt.html
+# Open Source Nepal – crawler rules
 User-agent: *
 Allow: /
-Disallow: /dashboard/
-Disallow: /profile/edit
-Disallow: /add-recipe
-Disallow: /admin/
 
-# Crawl delay to prevent server overload
-Crawl-delay: 1
+# Private or logged-in areas: nothing useful for search engines
+Disallow: /api/
+Disallow: /admin
+Disallow: /workspace
+Disallow: /onboarding
+Disallow: /investor
+Disallow: /login
+Disallow: /create
 
-# Sitemaps
-Sitemap: https://recipenest.keshavdev.me/sitemap.xml
+
+Sitemap: https://osnepal.keshavroka.com.np/sitemap.xml

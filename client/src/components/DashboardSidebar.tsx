@@ -21,7 +21,7 @@ import { Badge } from './ui/badge';
 import useLogout from '../hooks/useLogout';
 
 export default function DashboardSidebar() {
-  const { resolvedTheme: theme } = useTheme();
+  const { theme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -60,7 +60,7 @@ export default function DashboardSidebar() {
           {!collapsed && (
             <div>
               <h2 className="text-foreground text-[17px] font-semibold leading-[21px]">
-                Open Source Nepal
+                BuildTogether Nepal
               </h2>
               <p className="text-muted-foreground text-[12px] leading-[16px]">
                 Admin Dashboard

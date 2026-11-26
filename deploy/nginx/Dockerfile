@@ -20,7 +20,7 @@ FROM nginx:1.27-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy custom nginx config
-COPY deploy/nginx/recipenest.conf /etc/nginx/conf.d/default.conf
+COPY deploy/nginx/project_name.conf /etc/nginx/conf.d/default.conf
 
 # Copy built React app from builder stage
 COPY --from=frontend-builder /frontend/dist /usr/share/nginx/html

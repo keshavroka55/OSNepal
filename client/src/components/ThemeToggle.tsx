@@ -1,27 +1,25 @@
-import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTheme, type ThemePreference } from '../contexts/ThemeContext';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme, type Theme } from '../contexts/ThemeContext';
 
-const LABEL: Record<ThemePreference, string> = {
+const LABEL: Record<Theme, string> = {
   light: 'Light',
   dark: 'Dark',
-  system: 'System',
 };
-const ICON = { light: Sun, dark: Moon, system: Monitor } as const;
-const NEXT: Record<ThemePreference, ThemePreference> = {
+const ICON = { light: Sun, dark: Moon } as const;
+const NEXT: Record<Theme, Theme> = {
   light: 'dark',
-  dark: 'system',
-  system: 'light',
+  dark: 'light', // was 'system' before, now it goes back to light
 };
 
-// A single cycling button keeps the header compact on phones.
+// A single toggle button keeps the header compact on phones.
 export function ThemeToggle({ className = '' }: { className?: string }) {
-  const { theme, cycleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const Icon = ICON[theme];
 
   return (
     <button
       type="button"
-      onClick={cycleTheme}
+      onClick={toggleTheme}
       aria-label={`Theme: ${LABEL[theme]}. Switch to ${LABEL[NEXT[theme]]}.`}
       title={`Theme: ${LABEL[theme]}`}
       data-testid="theme-toggle"

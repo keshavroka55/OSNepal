@@ -1,73 +1,58 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-export type ThemePreference = 'light' | 'dark' | 'system';
-export type ResolvedTheme = 'light' | 'dark';
+export type Theme = 'light' | 'dark';
 
 interface ThemeContextValue {
-  /** What the user chose. */
-  theme: ThemePreference;
-  /** What is actually showing (system resolved to light or dark). */
-  resolvedTheme: ResolvedTheme;
-  setTheme: (t: ThemePreference) => void;
-  /** Cycles light -> dark -> system. */
-  cycleTheme: () => void;
+  /** The theme currently showing. */
+  theme: Theme;
+  setTheme: (t: Theme) => void;
+  /** Switches between light and dark. */
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 // Must match the key in the inline script in index.html.
 export const THEME_STORAGE_KEY = 'msa-theme';
-const ORDER: ThemePreference[] = ['light', 'dark', 'system'];
 
-const systemPrefersDark = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+// Used when the user has not chosen anything yet.
+const DEFAULT_THEME: Theme = 'light';
 
-function readStoredTheme(): ThemePreference {
+function readStoredTheme(): Theme {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
+    if (stored === 'light' || stored === 'dark') return stored;
   } catch {
-    // Storage can be blocked (private mode); fall back to following the system.
+    // Storage can be blocked (private mode); fall back to the default.
   }
-  return 'system';
+  return DEFAULT_THEME;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemePreference>(readStoredTheme);
-  const [systemDark, setSystemDark] = useState(systemPrefersDark);
+  const [theme, setThemeState] = useState<Theme>(readStoredTheme);
 
-  // Follow the OS setting live, but only matters while theme === 'system'.
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = (e: MediaQueryListEvent) => setSystemDark(e.matches);
-    query.addEventListener('change', onChange);
-    return () => query.removeEventListener('change', onChange);
-  }, []);
-
-  const resolvedTheme: ResolvedTheme =
-    theme === 'system' ? (systemDark ? 'dark' : 'light') : theme;
-
+  // Apply the theme to the page whenever it changes.
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle('dark', resolvedTheme === 'dark');
-    root.style.colorScheme = resolvedTheme;
+    root.classList.toggle('dark', theme === 'dark');
+    root.style.colorScheme = theme;
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', resolvedTheme === 'dark' ? '#0e1014' : '#f6f7f9');
-  }, [resolvedTheme]);
+      ?.setAttribute('content', theme === 'dark' ? '#0e1014' : '#f6f7f9');
+  }, [theme]);
 
   const value = useMemo<ThemeContextValue>(() => {
-    const setTheme = (next: ThemePreference) => {
+    const setTheme = (next: Theme) => {
       setThemeState(next);
       try {
         localStorage.setItem(THEME_STORAGE_KEY, next);
       } catch {
-        // Not persisted, but the choice still applies for this session.
+        // Not saved, but the choice still applies for this session.
       }
     };
-    const cycleTheme = () => setTheme(ORDER[(ORDER.indexOf(theme) + 1) % ORDER.length]);
-    return { theme, resolvedTheme, setTheme, cycleTheme };
-  }, [theme, resolvedTheme]);
+    const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+    return { theme, setTheme, toggleTheme };
+  }, [theme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

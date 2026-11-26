@@ -12,6 +12,8 @@ import { listProjects } from '../../features/nepal/api';
 import { useAsync } from '../../hooks/useAsync';
 import { TYPES, TYPE_META } from '../../features/nepal/meta';
 import SectionDivider from '../../components/SectionDivider';
+import InstallAppButton from '../../components/InstallButton';
+
 
 /* Put your images in /public/images and update these paths. Missing files show a placeholder. */
 const IMAGES = {
@@ -107,6 +109,11 @@ export default function SplashPage() {
                   Join the community <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
                 </Link>
               </p>
+
+              {/* Mobile only: hidden from the md breakpoint (768px) and up */}
+              <div className="mt-3 md:hidden">
+                <InstallAppButton />
+              </div>
             </Reveal>
 
             <Reveal delay={400}>
@@ -334,9 +341,11 @@ export default function SplashPage() {
                 <Link to="/register" className="group inline-flex h-12 items-center gap-2 rounded-md bg-white px-6 font-medium text-primary transition hover:bg-white/90 hover:shadow-lg dark:text-black">
                   Create your account <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
                 </Link>
-                <Link to="/login" className="inline-flex h-12 items-center rounded-md border border-white/40 px-6 font-medium transition hover:bg-white/10">
-                  Sign in
-                </Link>
+                
+                {/* Mobile only */}
+                <div className="mt-6 md:hidden">
+                  <InstallAppButton />
+                </div>
               </div>
 
               <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm opacity-90">

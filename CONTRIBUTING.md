@@ -94,9 +94,9 @@ Recommended attribution:
 
 "Powered by Open Source Nepal (OSNepal)"
 
-Original Repository: https://github.com/keshavroka55/OSNepal
+Original Repository: https://github.com/keshavroka55/OSNepal (might be change later in the future)
 
-Original Website: https://osnepal.com
+Original Website: https://osnepal.vercel.app
 
 The original OSNepal branding must not be removed or hidden in publicly distributed derivative applications.
 
